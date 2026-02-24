@@ -2,7 +2,6 @@
 .claude
 .aiassistant
 .venv
-CLAUDE.md
 .DS_Store
 postgresql
 *.iml
