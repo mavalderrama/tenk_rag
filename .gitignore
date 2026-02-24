@@ -4,3 +4,6 @@
 .venv
 CLAUDE.md
 .DS_Store
+postgresql
+*.iml
+.env
