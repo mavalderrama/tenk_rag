@@ -5,7 +5,7 @@ from app.domain.interfaces import distributed_cache
 
 class RedisCache(distributed_cache.IDistributedCache):
     def __init__(self, host: str, port: int):
-        self._client = redis.Redis(
+        self._client: redis.Redis[str] = redis.Redis(
             host=host,
             port=port,
             decode_responses=True,

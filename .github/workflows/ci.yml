@@ -98,7 +98,7 @@ jobs:
 
       - name: pytest
         working-directory: backend
-        run: uv run pytest app/ -v --tb=short
+        run: uv run pytest -v --tb=short
         env:
           DB_HOST: localhost
           DB_PORT: "5432"

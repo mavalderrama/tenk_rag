@@ -20,7 +20,7 @@ class BedrockLLMService(llm_service.ILLMService):
 
         self._llm = ChatBedrockConverse(
             client=self._bedrock_live_client,
-            model=self._bedrock_model_id,
+            model_id=self._bedrock_model_id,
             temperature=temperature,
             max_tokens=max_tokens,
         )
