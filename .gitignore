@@ -6,3 +6,5 @@
 postgresql
 *.iml
 .env
+*.pyc
+localstack
