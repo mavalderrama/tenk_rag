@@ -2,9 +2,9 @@ import json
 
 import boto3
 
-from src.domain.interfaces import messages
-from src.infrastructure.logging.logger import get_logger
-from src.domain.interfaces import embedder_service as embedder
+from app.domain.interfaces import embedder_service as embedder
+from app.domain.interfaces import messages
+from app.infrastructure.logging.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -20,14 +20,14 @@ class SQSMessage(messages.IMessage):
         self._bedrock_embedder = embedder_service
         self.create_queue()
 
-    def create_queue(self):
+    def create_queue(self) -> None:
         logger.info("Creating SQS queue...")
         try:
             self._sqs_client.create_queue(QueueName=self._queue_url)
         except Exception as e:
             logger.error(f"Failed to create SQS queue: {e}")
 
-    def _process_sqs_message(self, msg_body):
+    def _process_sqs_message(self, msg_body: str) -> None:
         event = json.loads(msg_body)
 
         # Check the Source
@@ -36,14 +36,12 @@ class SQSMessage(messages.IMessage):
 
         if source == "aws.bedrock":
             if detail_type == "Bedrock Model Invocation Job State Change":
-                self._bedrock_embedder.handle_bedrock_batch_job_state_change(
-                    event["detail"]
-                )
+                self._bedrock_embedder.handle_bedrock_batch_job_state_change(event["detail"])
 
         else:
             logger.info(f"Received unknown event from: {source}")
 
-    def consumer(self):
+    def consumer(self) -> None:
         logger.info("Listening for Bedrock job updates...")
         while True:
             # Long Polling: Waits up to 20 seconds for a message

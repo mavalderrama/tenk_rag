@@ -1,4 +1,5 @@
 import abc
+
 from langfuse import langchain
 
 
@@ -8,5 +9,5 @@ class IObservability(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def flush(self) -> str:
+    def flush(self) -> None:
         raise NotImplementedError

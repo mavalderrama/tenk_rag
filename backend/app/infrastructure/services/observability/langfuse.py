@@ -1,20 +1,19 @@
 from langfuse import get_client
 from langfuse.langchain import CallbackHandler
-from src.domain.interfaces.observability import IObservability
-from src.infrastructure.logging.logger import get_logger
+
+from app.domain.interfaces.observability import IObservability
+from app.infrastructure.logging.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 class LangfuseObservability(IObservability):
-    def __init__(self):
+    def __init__(self) -> None:
         self.client = get_client()
         if self.client.auth_check():
             logger.info("Langfuse client is authenticated and ready!")
         else:
-            logger.error(
-                "Authentication failed. Please check your credentials and host."
-            )
+            logger.error("Authentication failed. Please check your credentials and host.")
         self._handler = CallbackHandler()
 
     def get_observability_handler(self) -> CallbackHandler:

@@ -1,6 +1,6 @@
 import redis.asyncio as redis
 
-from src.domain.interfaces import distributed_cache
+from app.domain.interfaces import distributed_cache
 
 
 class RedisCache(distributed_cache.IDistributedCache):

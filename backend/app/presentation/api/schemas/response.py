@@ -1,5 +1,6 @@
-import pydantic
 from datetime import datetime
+
+import pydantic
 
 
 class QueryResponse(pydantic.BaseModel):
@@ -22,9 +23,7 @@ class AuthResponse(pydantic.BaseModel):
     id_token: str = pydantic.Field(..., description="JWT ID token")
     refresh_token: str = pydantic.Field(..., description="JWT refresh token")
     token_type: str = pydantic.Field(default="Bearer", description="Token type")
-    expires_in: int = pydantic.Field(
-        default=3600, description="Token expiration in seconds"
-    )
+    expires_in: int = pydantic.Field(default=3600, description="Token expiration in seconds")
 
 
 class HealthResponse(pydantic.BaseModel):

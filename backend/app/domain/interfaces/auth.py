@@ -14,8 +14,8 @@ class IAuthService(abc.ABC):
         password: str,
         email: str,
         temp_password: str,
-    ) -> None:
-        """Creates a new user."""
+    ) -> str:
+        """Creates a new user and returns the user sub."""
         raise NotImplementedError
 
     @abc.abstractmethod

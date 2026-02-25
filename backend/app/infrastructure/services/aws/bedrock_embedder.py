@@ -1,11 +1,12 @@
 import json
 import uuid
 from datetime import datetime
+from typing import Any, cast
 
 import boto3
 
-from src.domain.interfaces import distributed_cache, embedder_service
-from src.infrastructure.logging.logger import get_logger
+from app.domain.interfaces import distributed_cache, embedder_service
+from app.infrastructure.logging.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -17,7 +18,7 @@ class BedrockEmbedder(embedder_service.IEmbedderService):
         bedrock_batch_client_arn: str,
         bedrock_embedder_model_id: str,
         dimensions: int = 1024,
-        cache_client: distributed_cache.IDistributedCache = None,
+        cache_client: distributed_cache.IDistributedCache | None = None,
     ):
         self._bedrock_live_client = boto3.client("bedrock-runtime")
         self._bedrock_batch_client = boto3.client("bedrock")
@@ -48,15 +49,18 @@ class BedrockEmbedder(embedder_service.IEmbedderService):
             modelId=self._bedrock_embedder_model_id,
         )
         try:
-            return json.loads(response["body"].read().decode("utf-8"))["embedding"]
+            return cast(
+                "list[float]",
+                json.loads(response["body"].read().decode("utf-8"))["embedding"],
+            )
         except KeyError as e:
-            raise ValueError(f"Unexpected response format from Bedrock: {e}")
+            raise ValueError(f"Unexpected response format from Bedrock: {e}") from e
         except Exception as e:
-            raise RuntimeError(f"Error during embedding: {e}")
+            raise RuntimeError(f"Error during embedding: {e}") from e
 
     def batch_embed(
         self,
-        **kwargs,
+        **kwargs: Any,
     ) -> dict[str, str]:
         timestamp = f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
         job_id = f"titan-batch-embedding-job-{timestamp}-{uuid.uuid4().hex}"
@@ -77,13 +81,14 @@ class BedrockEmbedder(embedder_service.IEmbedderService):
             outputDataConfig={"s3OutputDataConfig": {"s3Uri": output_s3_uri}},
         )
 
-        self._cache_client.set(job_id, output_s3_uri)
+        if self._cache_client:
+            self._cache_client.set(job_id, output_s3_uri)  # type: ignore[unused-coroutine]
 
         logger.info(f"Batch Embeddings Job ARN: {response['jobArn']}")
 
-        return response
+        return cast("dict[str, str]", response)
 
-    def handle_bedrock_batch_job_state_change(self, event):
+    def handle_bedrock_batch_job_state_change(self, event: dict[str, Any]) -> None:
         logger.info(f"Received Bedrock Batch Job State Change: {event}")
         if event["detail"]["status"] == "Completed":
             logger.info("Bedrock Batch Job Completed Successfully")

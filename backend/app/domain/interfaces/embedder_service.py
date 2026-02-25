@@ -1,4 +1,5 @@
 import abc
+from typing import Any
 
 
 class IEmbedderService(abc.ABC):
@@ -21,7 +22,7 @@ class IEmbedderService(abc.ABC):
     @abc.abstractmethod
     def batch_embed(
         self,
-        **kwargs,
+        **kwargs: Any,
     ) -> dict[str, str]:
         """Embeds a list of texts into a list of vector representations.
 
@@ -30,5 +31,14 @@ class IEmbedderService(abc.ABC):
 
         Returns:
             dict[str, str]: A dictionary mapping input S3 URI to output S3 URI.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def handle_bedrock_batch_job_state_change(self, event: dict[str, Any]) -> None:
+        """Handles a Bedrock batch job state change event.
+
+        Args:
+            event: The EventBridge event detail dict.
         """
         raise NotImplementedError

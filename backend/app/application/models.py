@@ -1,5 +1,5 @@
-from pgvector.django import VectorField
 from django.db import models
+from pgvector.django import VectorField
 
 
 class Item(models.Model):

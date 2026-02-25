@@ -1,7 +1,7 @@
 import boto3
 from langchain_aws import ChatBedrockConverse
 
-from src.domain.interfaces import llm_service
+from app.domain.interfaces import llm_service
 
 
 class BedrockLLMService(llm_service.ILLMService):

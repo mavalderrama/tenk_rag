@@ -19,11 +19,82 @@ dependencies = [
     "pgvector>=0.3.6",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.0",
-    "pytest>=9.0.2",
     "python-dotenv>=1.2.1",
     "redis>=7.2.0",
-    "ruff>=0.15.1",
     "sqlalchemy>=2.0.46",
     "yfinance>=1.2.0",
     "django>=6.0.2",
 ]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.14.0",
+    "pre-commit>=4.0.0",
+    "pytest>=9.0.2",
+    "ruff>=0.15.1",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["app"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "RUF", # ruff-specific rules
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in default arguments (FastAPI DI pattern)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.13"
+mypy_path = ["backend"]
+explicit_package_bases = true
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "langchain.*",
+    "langchain_aws.*",
+    "langchain_openai.*",
+    "langchain_postgres.*",
+    "langgraph.*",
+    "langfuse.*",
+    "yfinance.*",
+    "pgvector.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["app.application.models"]
+ignore_errors = true

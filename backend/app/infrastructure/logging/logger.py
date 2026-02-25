@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -24,12 +25,7 @@ def get_logger(name: str) -> logging.Logger:
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(logger.level)
 
-        # Use JSON formatter for production, simple formatter for local dev
-        environment = os.getenv("ENVIRONMENT", "production")
-        # Simple format for local development
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
 
         logger.addHandler(handler)

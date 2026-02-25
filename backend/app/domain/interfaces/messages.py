@@ -3,7 +3,7 @@ import abc
 
 class IMessage(abc.ABC):
     @abc.abstractmethod
-    def consumer(self):
+    def consumer(self) -> None:
         """
         Listens for incoming messages and processes them.
 
@@ -13,7 +13,7 @@ class IMessage(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_queue(self):
+    def create_queue(self) -> None:
         """
         Creates a new message queue for handling messages.
 

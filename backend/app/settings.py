@@ -12,7 +12,7 @@ LANGFUSE_SECRET_KEY: str = ""
 LANGFUSE_BASE_URL: str = "https://us.langfuse.com"
 
 LANGSMITH_API_KEY: str = ""
-LANGSMITH_TRACING: bool = False if OBSERVABILITY_PROVIDER == "langfuse" else True
+LANGSMITH_TRACING: bool = OBSERVABILITY_PROVIDER != "langfuse"
 LANGSMITH_WORKSPACE_ID: str = "aws-ai-agent"
 LANGSMITH_ENDPOINT: str = "https://api.smith.langchain.com"
 LANGCHAIN_CALLBACKS_BACKGROUND: bool = False

@@ -1,8 +1,8 @@
 import boto3
-
-from src.domain.interfaces import auth
 from botocore.config import Config
-from src.infrastructure.logging.logger import get_logger
+
+from app.domain.interfaces import auth
+from app.infrastructure.logging.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -19,9 +19,7 @@ class CognitoService(auth.IAuthService):
         self._user_pool_id = user_pool_id
         self._app_client_id = app_client_id
 
-    def create_user(
-        self, username: str, password: str, email: str, temp_password: str
-    ) -> None:
+    def create_user(self, username: str, password: str, email: str, temp_password: str) -> str:
 
         try:
             response = self._cognito_client.admin_create_user(
@@ -43,12 +41,12 @@ class CognitoService(auth.IAuthService):
             user = response.get("User", {})
             for attr in user.get("Attributes", []):
                 if attr["Name"] == "sub":
-                    return attr["Value"]
+                    return str(attr["Value"])
 
             raise RuntimeError("User sub not found in response")
 
         except Exception as e:
-            raise RuntimeError(f"Failed to create user: {str(e)}")
+            raise RuntimeError(f"Failed to create user: {e!s}") from e
 
     def authenticate(self, username: str, password: str) -> dict[str, str]:
         logger.info("Attempting user authentication", extra={"username": username})
@@ -80,7 +78,7 @@ class CognitoService(auth.IAuthService):
                 "Authentication failed",
                 extra={"username": username, "error": str(e)},
             )
-            raise ValueError(f"Authentication failed: {str(e)}")
+            raise ValueError(f"Authentication failed: {e!s}") from e
 
     def verify_token(self, token: str) -> bool:
-        pass
+        raise NotImplementedError

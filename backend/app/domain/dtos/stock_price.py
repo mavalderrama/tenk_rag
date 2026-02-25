@@ -1,6 +1,7 @@
-import pydantic
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
+
+import pydantic
 
 
 class StockPrice(pydantic.BaseModel):

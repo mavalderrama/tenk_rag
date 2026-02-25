@@ -1,4 +1,6 @@
 import os
+import sys
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime
 
@@ -6,9 +8,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.di import container
-from src.infrastructure.logging.logger import get_logger
-from src.presentation.api.schemas.response import HealthResponse
+from app.di import container
+from app.infrastructure.logging.logger import get_logger
+from app.presentation.api.schemas.response import HealthResponse
 
 logger = get_logger(__name__)
 
@@ -17,7 +19,7 @@ load_dotenv()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Application lifespan manager."""
     # Startup
     environment = os.getenv("ENVIRONMENT", "production")
@@ -28,7 +30,7 @@ async def lifespan(app: FastAPI):
         extra={
             "environment": environment,
             "aws_region": aws_region,
-            "python_version": os.sys.version,
+            "python_version": sys.version,
         },
     )
 
@@ -38,7 +40,7 @@ async def lifespan(app: FastAPI):
         app.state.container = di_container
         logger.info("Application startup completed successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize application: {str(e)}", exc_info=True)
+        logger.error(f"Failed to initialize application: {e!s}", exc_info=True)
         raise
 
     yield
@@ -86,6 +88,6 @@ async def health_check() -> HealthResponse:
 
 # AgentCore health check endpoint (required by AgentCore - probes /ping)
 @app.get("/ping", tags=["health"])
-async def ping():
+async def ping() -> dict[str, str]:
     """AgentCore health check endpoint."""
     return {"status": "healthy"}
