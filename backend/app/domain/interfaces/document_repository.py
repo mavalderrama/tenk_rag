@@ -1,7 +1,7 @@
 import abc
 from datetime import datetime
 
-from app.domain.dtos.stock_price import HistoricalStockPrice
+from backend.app.domain.dtos.stock_price import HistoricalStockPrice
 
 
 class IDocumentRepository(abc.ABC):
