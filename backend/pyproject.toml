@@ -39,6 +39,7 @@ dev = [
 target-version = "py313"
 line-length = 100
 src = ["app"]
+exclude = ["**/migrations/**", "app/application/models.py"]
 
 [tool.ruff.lint]
 select = [
@@ -60,7 +61,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["app"]
+known-first-party = ["backend"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -96,5 +97,5 @@ module = [
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["app.application.models"]
+module = ["backend.app.application.models"]
 ignore_errors = true

@@ -19,7 +19,10 @@ settings.configure(
             "PORT": "5432",
         }
     },
-    INSTALLED_APPS=["app.application"],
+    INSTALLED_APPS=[
+        "app.application",
+        "django.contrib.postgres",
+    ],
 )
 
 if __name__ == "__main__":
