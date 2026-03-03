@@ -15,7 +15,7 @@ class Documents(models.Model):
 
 class DocumentChunks(models.Model):
     id = models.BigAutoField(primary_key=True)
-    document_id = models.ForeignKey(Documents, on_delete=models.PROTECT)
+    document = models.ForeignKey(Documents, on_delete=models.PROTECT)
     embedding = VectorField(dimensions=1024)
     search_vector = GeneratedField(
         expression=SearchVector('text', config='english'),
