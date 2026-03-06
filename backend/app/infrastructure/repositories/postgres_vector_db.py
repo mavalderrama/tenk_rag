@@ -2,8 +2,14 @@ import json
 
 from django.db import connection
 
+from backend.app.domain.dtos import document_chunk as dc
+from backend.app.domain.interfaces.document_repository import IDocumentRepository
+from backend.app.infrastructure.logging.logger import get_logger
 
-class PostgresVectorDb:
+logger = get_logger(__name__)
+
+
+class PostgresVectorDb(IDocumentRepository):
     def __init__(
         self,
         documents_limit: int = 100,
@@ -11,13 +17,13 @@ class PostgresVectorDb:
         self._connection = connection
         self._documents_limit = documents_limit
 
-    def execute(
+    def search_documents(
         self,
         query_text: str,
         query_embeddings: list[float],
         metadata: dict[str, str | int],
         top_k: int = 10,
-    ) -> list[tuple[str, str]]:
+    ) -> list[dc.DocumentChunk]:
 
         metadata_json_str = json.dumps(metadata)
 
@@ -47,6 +53,7 @@ class PostgresVectorDb:
             SELECT
             c.document_id,
             c.text,
+            c.metadata,
             COALESCE(1.0 / (60 + k.rank), 0.0) + COALESCE(1.0 / (60 + s.rank), 0.0) AS rrf_score
             FROM application_documentchunks c
             JOIN filtered_chunks fc ON c.id = fc.id -- Ensure we only return filtered items
@@ -69,4 +76,24 @@ class PostgresVectorDb:
                 },
             )
 
-        return [(r[0], r[1], r[2]) for r in cursor.fetchall()]  # type: ignore
+        chunks = []
+
+        for row in cursor.fetchall():
+            chunks.append(
+                dc.DocumentChunk(
+                    document_id=row[0],
+                    text=row[1],
+                    metadata=row[2],
+                    score=row[3],
+                )
+            )
+
+        logger.info(
+            "Document search completed",
+            extra={
+                "results_count": len(chunks),
+                "avg_score": sum(c.score for c in chunks) / len(chunks) if chunks else 0,
+            },
+        )
+
+        return chunks

@@ -1,17 +1,16 @@
 import abc
-from datetime import datetime
 
-from backend.app.domain.dtos.stock_price import HistoricalStockPrice
+from backend.app.domain.dtos import document_chunk as dc
 
 
 class IDocumentRepository(abc.ABC):
     @abc.abstractmethod
-    async def get_historical_stock_price(
+    def search_documents(
         self,
-        symbol: str,
-        start_date: datetime,
-        end_date: datetime,
-        period: str = "1d",
-    ) -> HistoricalStockPrice:
+        query_text: str,
+        query_embeddings: list[float],
+        metadata: dict[str, str | int],
+        top_k: int = 10,
+    ) -> list[dc.DocumentChunk]:
         """Gets a document by its ID."""
         raise NotImplementedError
